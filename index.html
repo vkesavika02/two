@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>From YES to Forever 💍</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Playfair Display', serif;
+  background: #000;
+  color: #fff;
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* ENTRY SCREEN */
+.entry {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: linear-gradient(135deg, #1a1a1a, #000);
+  transition: opacity 1s ease;
+}
+
+.entry h1 {
+  font-size: 26px;
+  margin-bottom: 40px;
+}
+
+.buttons {
+  display: flex;
+  gap: 20px;
+}
+
+/* BUTTONS */
+.btn {
+  padding: 14px 36px;
+  font-size: 18px;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+}
+
+/* YES */
+#yesBtn {
+  background: #fff;
+  color: #000;
+}
+
+/* NO — starts normal */
+#noBtn {
+  background: #444;
+  color: #fff;
+  position: relative; /* 👈 starts aligned */
+  transition: left 0.35s ease, top 0.35s ease;
+}
+
+/* CINEMATIC */
+.cinematic {
+  display: none;
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transform: scale(1.1);
+  transition: opacity 2s ease, transform 6s ease;
+}
+
+.slide.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.overlay {
+  position: fixed;   /* 👈 KEY CHANGE */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.75),
+    rgba(0,0,0,0.25),
+    rgba(0,0,0,0.6)
+  );
+  z-index: 5;
+}
+
+
+.text {
+  position: absolute;
+  bottom: 15%;
+  width: 100%;
+  text-align: center;
+  font-size: 22px;
+  letter-spacing: 1px;
+  opacity: 0;
+  transition: opacity 2s ease;
+}
+
+.text.show {
+  opacity: 1;
+}
+
+/* FINAL */
+.final {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0,0,0,0.75);
+  opacity: 0;
+  transition: opacity 3s ease;
+  text-align: center;
+}
+
+.final.show {
+  opacity: 1;
+}
+
+.final h1 {
+  font-size: 30px;
+}
+
+.final p {
+  font-size: 18px;
+  margin-top: 10px;
+  opacity: 0.9;
+}
+</style>
+</head>
+
+<body>
+
+<!-- ENTRY -->
+<div class="entry" id="entry">
+  <h1>Will you be my Valentine? 💕</h1>
+  <div class="buttons">
+    <button class="btn" id="yesBtn">YES</button>
+    <button class="btn" id="noBtn">NO</button>
+  </div>
+</div>
+
+<!-- CINEMATIC -->
+<div class="cinematic" id="cinematic">
+  <div class="slide" style="background-image:url('images/1.jpg')"></div>
+  <div class="slide" style="background-image:url('images/2.jpg')"></div>
+  <div class="slide" style="background-image:url('images/3.jpg')"></div>
+  <div class="slide" style="background-image:url('images/4.jpg')"></div>
+
+  <div class="overlay"></div>
+
+  <div class="text" id="storyText">
+    Every love story begins with a YES…
+  </div>
+
+  <div class="final" id="finalScreen">
+    <h1>Kesavika ❤️ Vignesh</h1>
+    <p>Engaged | 2026</p>
+    <p>From this YES to forever 💍</p>
+  </div>
+</div>
+
+<audio id="bgMusic" src="music.mp3" loop></audio>
+
+<script>
+const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
+const entry = document.getElementById("entry");
+const cinematic = document.getElementById("cinematic");
+const slides = document.querySelectorAll(".slide");
+const text = document.getElementById("storyText");
+const finalScreen = document.getElementById("finalScreen");
+const music = document.getElementById("bgMusic");
+
+let index = 0;
+let activated = false;
+
+/* 🦋 BUTTERFLY MOVE */
+function butterflyMove() {
+  if (!activated) {
+    const rect = noBtn.getBoundingClientRect();
+    noBtn.style.position = "fixed";
+    noBtn.style.left = rect.left + "px";
+    noBtn.style.top = rect.top + "px";
+    activated = true;
+  }
+
+  const padding = 20;
+  const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+  const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+
+  noBtn.style.left = Math.random() * maxX + "px";
+  noBtn.style.top = Math.random() * maxY + "px";
+
+  if (navigator.vibrate) navigator.vibrate(40);
+}
+
+noBtn.addEventListener("mouseenter", butterflyMove);
+noBtn.addEventListener("touchstart", butterflyMove);
+noBtn.addEventListener("click", butterflyMove);
+
+/* YES CLICK */
+yesBtn.addEventListener("click", () => {
+  entry.style.opacity = 0;
+
+  setTimeout(() => {
+    entry.style.display = "none";
+    cinematic.style.display = "block";
+    music.volume = 0.4;
+    music.play();
+    showSlide();
+  }, 1000);
+});
+
+function showSlide() {
+  slides[index].classList.add("active");
+  text.classList.add("show");
+
+  setTimeout(() => {
+    slides[index].classList.remove("active");
+    text.classList.remove("show");
+    index++;
+
+    if (index < slides.length) {
+      showSlide();
+    } else {
+      finalScreen.classList.add("show");
+    }
+  }, 4500);
+}
+</script>
+
+</body>
+</html>
